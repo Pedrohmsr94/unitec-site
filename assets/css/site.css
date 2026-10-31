@@ -321,21 +321,20 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   .hero__pausa { bottom: auto; top: calc(var(--topo-h) + 8px); right: auto; left: var(--margem); width: 44px; height: 44px; min-height: 44px; padding: 0; justify-content: center; }
   .hero__pausa span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
   .chamada .no__rotulo {
-    display: block; position: absolute; left: 16px; top: -16px; width: max-content; max-width: min(220px, 56vw); padding: 6px 11px 7px; text-align: left;
+    display: block; position: absolute; left: 16px; top: -16px; width: max-content; max-width: var(--larg-titulo, min(220px, 56vw)); padding: 6px 11px 7px; text-align: left;
     background: rgba(7, 10, 51, .9); border: 1px solid var(--fio-escuro-2); border-radius: 0; color: #fff; font: inherit; font-size: .8125rem; font-weight: 800; line-height: 1.3; cursor: pointer;
+    transition: max-width .4s var(--ease), border-color .3s var(--ease);
   }
   .chamada .no__rotulo::after { content: ""; position: absolute; inset: -8px; }
   .chamada--rotulo-esq .no__rotulo { left: auto; right: 16px; }
-  /* fechada, a etiqueta abraça o título: o detalhe só entra na largura quando abre e só sai ao fim do fechamento */
-  .no__texto {
-    display: none; max-height: 0; overflow: hidden; opacity: 0; font-size: .75rem; font-weight: 600; line-height: 1.35; color: var(--sobre-2);
-    transition: max-height .45s var(--ease), opacity .35s var(--ease), margin-top .35s var(--ease);
-    transition: max-height .45s var(--ease), opacity .35s var(--ease), margin-top .35s var(--ease), display .45s allow-discrete;
-  }
+  /* fechada, a etiqueta tem a largura do título (--larg-titulo, medida em JS); ao abrir e ao fechar, a largura anda junto com o esmaecimento.
+     O detalhe tem largura própria e fica numa janela que corta, para não refazer as linhas no meio da animação. */
+  .no__titulo { display: block; width: max-content; white-space: nowrap; }
+  .no__janela { display: block; max-height: 0; overflow: hidden; opacity: 0; transition: max-height .4s var(--ease), opacity .3s var(--ease), margin-top .3s var(--ease); }
+  .no__texto { display: block; width: max-content; max-width: calc(min(220px, 56vw) - 24px); font-size: .75rem; font-weight: 600; line-height: 1.35; color: var(--sobre-2); }
   .chamada.aberta { z-index: 3; }
-  .chamada.aberta .no__rotulo { border-color: rgba(255, 255, 255, .7); }
-  .chamada.aberta .no__texto { display: block; max-height: 90px; opacity: 1; margin-top: 4px; }
-  @starting-style { .chamada.aberta .no__texto { max-height: 0; opacity: 0; margin-top: 0; } }
+  .chamada.aberta .no__rotulo { max-width: min(220px, 56vw); border-color: rgba(255, 255, 255, .7); }
+  .chamada.aberta .no__janela { max-height: 90px; opacity: 1; margin-top: 4px; }
   .chamada[data-mobile="nao"] { display: none; }
   .hero__veu { background: linear-gradient(180deg, rgba(7, 10, 51, .55) 0%, rgba(7, 10, 51, 0) 22%, rgba(7, 10, 51, 0) 52%, rgba(7, 10, 51, .96) 100%); }
   .hero__conteudo { margin-top: calc(-1 * clamp(120px, 19svh, 190px)); padding-top: 0; padding-bottom: 36px; }

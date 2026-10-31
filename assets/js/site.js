@@ -119,22 +119,31 @@
   // Trava: a chamada que cairia sob o topo fixo ou sob o título (mesmo aberta) não aparece nesse tamanho de tela.
   function cabeNoPalco(c) {
     const palco = $('.hero__palco'), conteudo = $('.hero__conteudo'), topo = $('[data-topo]');
-    const bt = $('[data-chamada-botao]', c), tx = $('.no__texto', c);
-    if (!palco || !conteudo || !bt || !tx) return true;
+    const bt = $('[data-chamada-botao]', c), jn = $('.no__janela', c);
+    if (!palco || !conteudo || !bt || !jn) return true;
     const topoEm = (el, ate) => { let y = 0; while (el && el !== ate) { y += el.offsetTop; el = el.offsetParent; } return y; };
     const alto = topoEm(bt, palco);
     // a altura da etiqueta aberta, medida numa cópia invisível: a original não pisca nem dispara transição
     const copia = bt.cloneNode(true);
     copia.removeAttribute('data-chamada-botao'); copia.setAttribute('aria-hidden', 'true'); copia.tabIndex = -1;
     copia.style.cssText = 'visibility: hidden; pointer-events: none; transition: none';
-    $('.no__texto', copia).style.cssText = 'display: block; max-height: none; opacity: 1; margin-top: 4px; transition: none';
+    $('.no__janela', copia).style.cssText = 'max-height: none; opacity: 1; margin-top: 4px; transition: none';
     c.appendChild(copia);
     const baixo = alto + copia.offsetHeight;
     copia.remove();
     return alto > (topo ? topo.offsetHeight : 0) + 30 && baixo < topoEm(conteudo, hero) - topoEm(palco, hero) - 12;
   }
+  // a largura da etiqueta fechada é a do título (padding e borda somam 24 px; 2 px de folga para o arredondamento)
+  function medeTitulos() {
+    chamadasHero.forEach((c) => {
+      const t = $('.no__titulo', c);
+      if (t && t.offsetWidth) c.style.setProperty('--larg-titulo', `${t.offsetWidth + 26}px`);
+    });
+  }
+  document.fonts && document.fonts.ready.then(medeTitulos);
   function rodizioChamadas() {
     clearInterval(cicloHero);
+    medeTitulos();
     chamadasHero.forEach((c) => c.classList.remove('chamada--fora'));
     if (!estreito()) { abreChamada(null); return; }
     const visiveis = chamadasHero.filter((c) => {
