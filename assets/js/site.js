@@ -103,9 +103,52 @@
     etiquetasHero.length && etiquetasHero[0].parentElement.style.setProperty('--vis', vis);
   }
 
+  // No celular, as chamadas mostram o conteúdo uma de cada vez; um toque abre a escolhida e para o rodízio.
+  const chamadasHero = $$('[data-chamada]');
+  let cicloHero = null;
+  function abreChamada(alvo) {
+    chamadasHero.forEach((c) => {
+      const ab = c === alvo; c.classList.toggle('aberta', ab);
+      const bt = $('[data-chamada-botao]', c); if (bt) bt.setAttribute('aria-expanded', String(ab));
+    });
+  }
+  chamadasHero.forEach((c) => {
+    const bt = $('[data-chamada-botao]', c);
+    if (bt) bt.addEventListener('click', () => { clearInterval(cicloHero); abreChamada(c.classList.contains('aberta') ? null : c); });
+  });
+  // Trava: a chamada que cairia sob o topo fixo ou sob o título (mesmo aberta) não aparece nesse tamanho de tela.
+  function cabeNoPalco(c) {
+    const palco = $('.hero__palco'), conteudo = $('.hero__conteudo'), topo = $('[data-topo]');
+    const bt = $('[data-chamada-botao]', c), tx = $('.no__texto', c);
+    if (!palco || !conteudo || !bt || !tx) return true;
+    const topoEm = (el, ate) => { let y = 0; while (el && el !== ate) { y += el.offsetTop; el = el.offsetParent; } return y; };
+    const alto = topoEm(bt, palco);
+    const fechado = bt.offsetHeight - tx.offsetHeight - parseFloat(getComputedStyle(tx).marginTop);
+    const baixo = alto + fechado + tx.scrollHeight + 4;
+    return alto > (topo ? topo.offsetHeight : 0) + 30 && baixo < topoEm(conteudo, hero) - topoEm(palco, hero) - 12;
+  }
+  function rodizioChamadas() {
+    clearInterval(cicloHero);
+    chamadasHero.forEach((c) => c.classList.remove('chamada--fora'));
+    if (!estreito()) { abreChamada(null); return; }
+    const visiveis = chamadasHero.filter((c) => {
+      if (c.dataset.mobile === 'nao') return false;
+      const cabe = cabeNoPalco(c);
+      c.classList.toggle('chamada--fora', !cabe);
+      return cabe;
+    });
+    if (!visiveis.length) return;
+    let i = 0; abreChamada(visiveis[0]);
+    if (reduz) return;
+    cicloHero = setInterval(() => { i = (i + 1) % visiveis.length; abreChamada(visiveis[i]); }, 3800);
+  }
+
   // Entrada: as linhas se desenham depois que as etiquetas acham o lugar.
+  let entrou = false;
   function entrada() {
     if (!hero) return;
+    entrou = true;
+    rodizioChamadas();
     posicionaEtiquetas();
     if (reduz) return;
     hero.classList.add('hero--entrada');
@@ -192,7 +235,12 @@
   document.fonts && document.fonts.ready.then(posicionaEtiquetas);
   addEventListener('resize', posicionaEtiquetas);
   // a cena muda de tamanho (fonte que carrega, janela que muda, captura de página inteira): as linhas se refazem antes de pintar
-  if (hero && 'ResizeObserver' in window) new ResizeObserver(() => posicionaEtiquetas()).observe(hero);
+  let refazChamadas = null;
+  if (hero && 'ResizeObserver' in window) new ResizeObserver(() => {
+    posicionaEtiquetas();
+    clearTimeout(refazChamadas);
+    refazChamadas = setTimeout(() => { if (entrou) rodizioChamadas(); }, 250);
+  }).observe(hero);
 
   /* ---------------- O método: a vista explodida ---------------- */
   const metodo = $('[data-metodo]');
