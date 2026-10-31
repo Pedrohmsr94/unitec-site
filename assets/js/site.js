@@ -123,8 +123,14 @@
     if (!palco || !conteudo || !bt || !tx) return true;
     const topoEm = (el, ate) => { let y = 0; while (el && el !== ate) { y += el.offsetTop; el = el.offsetParent; } return y; };
     const alto = topoEm(bt, palco);
-    const fechado = bt.offsetHeight - tx.offsetHeight - parseFloat(getComputedStyle(tx).marginTop);
-    const baixo = alto + fechado + tx.scrollHeight + 4;
+    // a altura da etiqueta aberta, medida numa cópia invisível: a original não pisca nem dispara transição
+    const copia = bt.cloneNode(true);
+    copia.removeAttribute('data-chamada-botao'); copia.setAttribute('aria-hidden', 'true'); copia.tabIndex = -1;
+    copia.style.cssText = 'visibility: hidden; pointer-events: none; transition: none';
+    $('.no__texto', copia).style.cssText = 'display: block; max-height: none; opacity: 1; margin-top: 4px; transition: none';
+    c.appendChild(copia);
+    const baixo = alto + copia.offsetHeight;
+    copia.remove();
     return alto > (topo ? topo.offsetHeight : 0) + 30 && baixo < topoEm(conteudo, hero) - topoEm(palco, hero) - 12;
   }
   function rodizioChamadas() {

@@ -326,10 +326,16 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   }
   .chamada .no__rotulo::after { content: ""; position: absolute; inset: -8px; }
   .chamada--rotulo-esq .no__rotulo { left: auto; right: 16px; }
-  .no__texto { display: block; max-height: 0; overflow: hidden; opacity: 0; font-size: .75rem; font-weight: 600; line-height: 1.35; color: var(--sobre-2); transition: max-height .45s var(--ease), opacity .35s var(--ease), margin-top .35s var(--ease); }
+  /* fechada, a etiqueta abraça o título: o detalhe só entra na largura quando abre e só sai ao fim do fechamento */
+  .no__texto {
+    display: none; max-height: 0; overflow: hidden; opacity: 0; font-size: .75rem; font-weight: 600; line-height: 1.35; color: var(--sobre-2);
+    transition: max-height .45s var(--ease), opacity .35s var(--ease), margin-top .35s var(--ease);
+    transition: max-height .45s var(--ease), opacity .35s var(--ease), margin-top .35s var(--ease), display .45s allow-discrete;
+  }
   .chamada.aberta { z-index: 3; }
   .chamada.aberta .no__rotulo { border-color: rgba(255, 255, 255, .7); }
-  .chamada.aberta .no__texto { max-height: 90px; opacity: 1; margin-top: 4px; }
+  .chamada.aberta .no__texto { display: block; max-height: 90px; opacity: 1; margin-top: 4px; }
+  @starting-style { .chamada.aberta .no__texto { max-height: 0; opacity: 0; margin-top: 0; } }
   .chamada[data-mobile="nao"] { display: none; }
   .hero__veu { background: linear-gradient(180deg, rgba(7, 10, 51, .55) 0%, rgba(7, 10, 51, 0) 22%, rgba(7, 10, 51, 0) 52%, rgba(7, 10, 51, .96) 100%); }
   .hero__conteudo { margin-top: calc(-1 * clamp(120px, 19svh, 190px)); padding-top: 0; padding-bottom: 36px; }
