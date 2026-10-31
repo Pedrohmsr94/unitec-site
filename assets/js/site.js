@@ -3,7 +3,7 @@
 (() => {
   const doc = document.documentElement;
   const reduz = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const estreito = () => matchMedia('(max-width: 999px), (max-aspect-ratio: 1/1)').matches;
+  const estreito = () => matchMedia('(max-width: 999px), (max-aspect-ratio: 1/1) and (max-width: 1400px)').matches;
   const lim = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
   const suave = (t) => (t <= 0 ? 0 : t >= 1 ? 1 : t * t * (3 - 2 * t));
   const $ = (s, el = document) => el.querySelector(s);
