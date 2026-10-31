@@ -1,6 +1,7 @@
 /* Unitec, site v2 (31/10/2026). Mundo: "Ficha técnica do campo".
    Dois fundos com regra fixa: noite/marinho para apresentar, branco/aço para consultar.
-   Um vermelho só para ação e para o nó da chamada. Mulish única. Nada se move sozinho. */
+   Um vermelho para ação, nó da chamada e o que está ativo agora. Mulish única. O herói é vivo (vídeo e empurrão lento);
+   o resto se move com a rolagem; com "reduzir movimento", tudo fica parado e completo. */
 
 @font-face {
   font-family: "Mulish";
@@ -220,7 +221,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 /* ==========================================================================
    Herói: a vista geral da fazenda, com chamadas de catálogo
    ========================================================================== */
-.hero { position: relative; display: grid; grid-template-rows: 1fr auto; min-height: max(100svh, 700px); background: var(--noite); color: var(--sobre-2); isolation: isolate; overflow: clip; }
+.hero { position: relative; display: grid; grid-template-rows: 1fr auto; min-height: max(min(100svh, 1100px), 700px); background: var(--noite); color: var(--sobre-2); isolation: isolate; overflow: clip; }
 .hero__palco { position: absolute; inset: 0; z-index: -1; overflow: clip; container-type: size; }
 .hero__cena {
   --ar: 1.7684; --W: max(100cqw, 100cqh * var(--ar));
@@ -763,7 +764,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .hero__escala, .hero__pausa { opacity: var(--texto, 1); }
 @media (min-width: 1000px) and (min-aspect-ratio: 1/1) {
   .js .hero-trilho--vivo { height: calc(100svh + 70svh); }
-  .js .hero-trilho--vivo .hero { position: sticky; top: 0; height: 100svh; min-height: 0; }
+  .js .hero-trilho--vivo .hero { position: sticky; top: 0; height: min(100svh, 1100px); min-height: 0; }
   /* os números sobem por dentro da cena que escurece, sem tela vazia no meio */
   .js .hero-trilho--vivo + .numeros { margin-top: -60svh; z-index: 2; background: linear-gradient(180deg, rgba(7, 10, 51, 0) 0, rgba(7, 10, 51, .9) 22svh, var(--noite) 40svh); }
 }
@@ -841,8 +842,10 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .painel__mais > ul + .btn { justify-self: start; }
 @media (max-width: 960px) {
   .paineis { flex-direction: column; height: auto; gap: 10px; }
-  .painel { flex: none; min-height: 260px; cursor: default; }
-  .painel.aberto { min-height: 440px; }
+  .painel { flex: none; min-height: 0; display: flex; flex-direction: column; justify-content: flex-end; cursor: default; }
+  .painel.aberto { min-height: 0; }
+  .painel__corpo { position: relative; padding-top: 180px; }
+  .painel:not(.aberto) .painel__legenda { display: block; }
   .painel__mais { grid-template-rows: 1fr; opacity: 1; }
 }
 

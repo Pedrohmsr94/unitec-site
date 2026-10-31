@@ -56,7 +56,7 @@
     const topoMin = (topo ? topo.offsetHeight : 76) + 76;
     const faixa = $('.dados-dia', hero);
     const pausaBt = $('[data-hero-pausa]', hero);
-    const fundo = (faixa ? faixa.getBoundingClientRect().top - hr.top : hr.height) - (pausaBt ? 140 : 60);
+    const fundo = (faixa ? faixa.getBoundingClientRect().top - hr.top : hr.height) - (pausaBt ? 165 : 60);
     const itens = etiquetasHero.map((et, i) => {
       const no = $(`[data-chamada="${et.dataset.etiqueta}"] .no`, hero).getBoundingClientRect();
       return { et, i, x: no.left + no.width / 2 - hr.left, y: no.top + no.height / 2 - hr.top, h: et.offsetHeight };
@@ -191,6 +191,8 @@
   hero && hero.classList.add('hero--posicionado');
   document.fonts && document.fonts.ready.then(posicionaEtiquetas);
   addEventListener('resize', posicionaEtiquetas);
+  // a cena muda de tamanho (fonte que carrega, janela que muda, captura de página inteira): as linhas se refazem antes de pintar
+  if (hero && 'ResizeObserver' in window) new ResizeObserver(() => posicionaEtiquetas()).observe(hero);
 
   /* ---------------- O método: a vista explodida ---------------- */
   const metodo = $('[data-metodo]');
